@@ -1,4 +1,4 @@
-with open("inp.txt") as f:
+with open("inp1.txt") as f:
     c = f.read().split("\n")
 
 print (c)
