@@ -1,5 +1,3 @@
-import math
-
 with open("inp2.txt") as f:
     s = 0
     for line in f:
