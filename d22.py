@@ -10,6 +10,9 @@ with open("inp22.txt") as f:
             directions.append(i)
     movements = [int(i) for i in commands.replace("R", "L").split("L")]
 
+directions = ['R']
+movements = [5, 5]
+
 offsets = {0: np.array([0, 1]), 1: np.array([-1, 0]), 2: np.array([0, -1]), 3: np.array([1, 0])} 
 
 facing = 0 # 0 = right and then just use +1 -1 
@@ -19,12 +22,36 @@ for i in range(len(board[0])):
         break
 pos = np.array([0, validx]) # should be the leftmost valid x position, i think
 
+def printgrid():
+    for i in board:
+        print (i)
+#printgrid()
+
 def ongrid(pos):
     if 0 <= pos[0] <= len(board)-1 and 0 <= pos[1] <= len(board[pos[0]])-1:
         return True 
     return False
 
+def validspace(pos):
+    if board[pos[0]][pos[1]] == "#":
+        return -1 
+    else:
+        return pos
+
 def validmove(pos, facing):
+    print (pos, offsets[facing])
+    newpos = pos+offsets[facing]
+    if ongrid(newpos) == False or board[newpos[0]][newpos[1]] == " ": 
+        if pos[0] == 149 and facing == 3:
+            return validspace(np.array([150+pos[1]-50, 49]))
+        if pos[1] == 49 and facing == 0:
+            return validspace(np.array([149, 50]))
+    elif board[newpos[0]][newpos[1]] == "#":
+        return -1
+    else:
+        return newpos
+
+"""def validmove(pos, facing):
     newpos = pos+offsets[facing]
     if ongrid(newpos) == False or board[newpos[0]][newpos[1]] == " ": 
         # then keep going in the OPPOSITE of the facing direction until a " " is found; stop right before it
@@ -41,12 +68,16 @@ def validmove(pos, facing):
         return -1
     else: 
         return newpos
-        # it is valid
+        # it is valid"""
+
+pos = np.array([167, 48])
 
 for index, i in enumerate(movements):
     #print (i)
     # do the thing i times
     for j in range(i):
+        print (pos)
+        print (board[pos[0]][pos[1]])
         c = validmove(pos, facing)
         if type(c) != int:
             pos = c
@@ -58,5 +89,7 @@ for index, i in enumerate(movements):
             facing += 1
         facing = facing % 4
 
-print ((pos[0]+1)*1000+(pos[1]+1)*4)
-print (facing)
+
+
+#print ((pos[0]+1)*1000+(pos[1]+1)*4)
+#print (facing)
