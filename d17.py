@@ -1,5 +1,5 @@
 import time
-
+import math
 with open("inp17.txt") as f:
     s = f.read().strip()
 
@@ -31,7 +31,7 @@ def printgrid():
 
 def height(grid):
     for i in range(len(grid)-1, 0, -1):
-        if grid[i] != [i for i in "......."]:
+        if grid[i] != ["." for i in range(7)]:
             return i
     return 0
 
@@ -107,10 +107,24 @@ def stop():
                     grid[i][j] = "#"
 
 sindex = 0
-for r in range(1000000000000):
-    if r % 10000 == 0:
-        print (r)
-    addshape(shapes[r % 5])
+starter = 20000
+distance = 1000
+for piece in range(int(1e10)):
+    # check for cycles up to the length of half the grid
+    succ = 0
+    h = height(grid)
+    if piece == starter-1:
+        # record the height
+        recorded_height = h
+    elif piece > starter+10: # some arbitrary constant to prevent the same thing from being chosen
+        if grid[(h-distance):h] == grid[(recorded_height-distance):recorded_height]:
+            piecedif = piece - starter
+            heightdif = h-recorded_height
+            succ = 1
+            break
+    if succ == 1:
+        break
+    addshape(shapes[piece % 5])
     while True:  
         if s[sindex % len(s)] == "<":
             if shapestop("L") == False:
@@ -124,6 +138,43 @@ for r in range(1000000000000):
         else:
             break
     stop()  
-    # check if the grid matches a hash; if so, yeeeeeeeet
     locs = []
-print (height(grid)+1)
+
+#piecedif -= 1
+stacks = math.floor((1000000000000-piece-distance)/piecedif)
+print ("heightdif:"+str(heightdif))
+print ("piecedif:"+str(piecedif))
+print ("piece:"+str(piece))
+print ("stacks:"+str(stacks))
+rem_pieces = 1000000000000-piece-piecedif*stacks
+h = heightdif*stacks
+print ("h"+str(height(grid)))
+print (height(grid)+1+h)
+print ("remaining pieces:"+str(rem_pieces))
+
+# optimal is 1514285714288
+
+for i in range(piece, rem_pieces+piece):
+    addshape(shapes[i % 5])
+    while True:
+        if s[sindex % len(s)] == "<":
+            if shapestop("L") == False:
+                locs = fall("L")
+        else:
+            if shapestop("R") == False:
+                locs = fall("R")
+        sindex += 1
+        if shapestop("D") == False:
+            locs = fall("D")
+        else:
+            break
+    stop()  
+    locs = []
+
+true_height = (height(grid)+1)+h
+print (true_height)
+
+# 1578107183540 too high
+# will guess 1577207977186
+
+# THIS CODE WAS WRITTEN BY SCHRODINGER'S CAT
